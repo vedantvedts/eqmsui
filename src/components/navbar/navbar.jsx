@@ -18,7 +18,7 @@ const Navbar = () => {
 
         <Link className="navbar-brand flex items-center gap-2 group" to="/dashboard">
           <FaHome className="me-1 icon" size={32} />
-          <span className="text-lg font-semibold label">EQMS</span>
+          <span className="text-lg font-semibold label">EQPIMS</span>
         </Link>
 
         <button
@@ -55,6 +55,31 @@ const Navbar = () => {
                 <li><Link className="dropdown-item" to="/equipmentlog">Equipment Log </Link></li>
               </ul>
             </li>
+            <li>
+            <div className="nav-link dropdown-toggle" role="button">
+                Calibration
+              </div>
+            </li>
+            <li>
+            <div className="nav-link dropdown-toggle" role="button">
+                Inventory Components
+              </div>
+            </li>
+            <li>
+            <div className="nav-link dropdown-toggle" role="button">
+                Material Gatepass
+              </div>
+            </li>
+            <li>
+            <div className="nav-link dropdown-toggle" role="button">
+                Stock Verification
+              </div>
+            </li>
+            {/* <li>
+            <div className="nav-link dropdown-toggle" role="button">
+                Product Tree Inventory
+              </div>
+            </li> */}
 
             <li className="nav-item">
               <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>

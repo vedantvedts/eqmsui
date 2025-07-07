@@ -69,7 +69,7 @@ const LoginPage = (props) => {
       <header className="navbar navbar-expand-lg navbar-dark custom-header-bg px-2 py-2">
         <div className="d-flex align-items-center mx-auto">
           <img src={drdologo} alt="Logo" height="70" width="70" className="me-4" />
-          <h2 className="text-white mb-0">Equipment Management System (EQMS)</h2>
+          <h4 className="text-white mb-0">Equipment & Project Inventory Monitoring System (EQPIMS Ver1.0)</h4>
         </div>
       </header>
 
@@ -93,7 +93,7 @@ const LoginPage = (props) => {
             </div>
 
             <div className="col-md-6 p-5 d-flex flex-column justify-content-center">
-              <h5 className="text-center text-brand mb-2">Welcome To EQMS</h5>
+              <h5 className="text-center text-brand mb-2">Welcome To EQPIMS</h5>
               <h4 className="text-center mb-4">Login</h4>
               {message && (
                 <div className="form-group">
