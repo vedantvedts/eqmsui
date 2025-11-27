@@ -61,10 +61,14 @@ const Navbar = () => {
                 Calibration
               </div>
             </li> */}
-            <li>
+            <li className="nav-item dropdown hover-dropdown position-relative ms-3 me-3">
             <div className="nav-link dropdown-toggle" role="button">
                 Inventory Components
               </div>
+               <ul className="dropdown-menu">
+                <li><Link className="dropdown-item" to="/componentlist">Component</Link></li>
+                 <li><Link className="dropdown-item" to="/componentdetails">Component Details</Link></li>
+               </ul>
             </li>
             <li>
             <div className="nav-link dropdown-toggle" role="button">

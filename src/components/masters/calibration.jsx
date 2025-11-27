@@ -171,10 +171,8 @@ const getEquipmentMasterList = async () => {
           </div>
         </div >
 
-        
-    );
-
-    };
+     );
+   };
 
 }
 
