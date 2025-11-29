@@ -94,7 +94,7 @@ const getEquipmentMasterList = async () => {
 
   const columns = [
     { name: "SN", selector: (row) => row.sn, sortable: true, align: 'text-center' },
-    { name: "Calibration Agency", selector: (row) => row.calibrationAgency, sortable: true, align: 'text-center' },
+  
     { name: "Calibration Start Date ", selector: (row) => row.calibrationDate, sortable: true, align: 'text-center' },
     { name: "Calibration Due Date", selector: (row) => row.calibrationDueDate, sortable: true, align: 'text-center' },
     { name: "Action", selector: (row) => row.action, sortable: true, align: 'text-center', },
@@ -103,20 +103,26 @@ const getEquipmentMasterList = async () => {
 
 
   const setTableData = (data) => {
+
+    const sortedData = [...data].sort(
+    (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+  );
+
     setCalibrationList(
-      data.map((item, index) => ({
+      sortedData.map((item, index) => ({
         sn: index + 1 + '.',
         equipmentName: item.equipmentName ?? '-',
-        calibrationAgency:item.calibrationAgency ?? '-',
         calibrationDate:item.calibrationDate ? format(new Date(item.calibrationDate), "dd-MM-yyyy"): '-',
         calibrationDueDate:item.calibrationDueDate ? format(new Date(item.calibrationDueDate),"dd-MM-yyyy"): '-',
        
         action: (
           <>
-           
+           {index === 0 && item.calibrationId && (
             <button className="btn btn-warning btn-sm" onClick={() => item.calibrationId != null && editCalibration(item.calibrationId)} title="Edit Equipment">
               <FaEdit size={16} />
             </button>
+
+            )}
           </>
         ),
       }))
@@ -163,7 +169,7 @@ const getEquipmentMasterList = async () => {
               </div>
               <div align="center" >
                 <button className="mt-2 btn add" onClick={() => addCalibration()}>
-                  ADD
+                  Revise
                 </button>
                 <Link className="mt-2 btn back" to="/dashboard">BACK</Link>
               </div>

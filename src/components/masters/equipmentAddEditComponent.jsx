@@ -29,9 +29,9 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
 
   const [formData, setFormData] = useState({
 
-    //calibrationAgency: "",
-    //calibrationDate: "",
-    //calibrationDueDate: "",
+    calibrationAgency: "",
+    calibrationDate: "",
+    calibrationDueDate: "",
     itemCost: "",
     itemSerialNumber: "",
     location: "",
@@ -61,9 +61,9 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
         ...prev,
         equipmentId: data?.equipmentId ?? "",
         equipmentName: data?.equipmentName ?? "",
-        //calibrationAgency: data?.calibrationAgency ?? "",
-        //calibrationDate: data?.calibrationDate ?? "",
-        //calibrationDueDate: data?.calibrationDueDate ?? "",
+        calibrationAgency: data?.calibrationAgency ?? "",
+        calibrationDate: data?.calibrationDate ?? "",
+        calibrationDueDate: data?.calibrationDueDate ?? "",
         itemCost: data?.itemCost ?? 0,
         itemSerialNumber: data?.itemSerialNumber ?? "",
         location: data?.location ?? "",
@@ -164,8 +164,9 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
     initiateOfficer: requiredField,
 
     //serviceStatus: requiredField,
-    // calibrationDate: requiredField,
-    // calibrationDueDate: requiredField,
+    calibrationAgency: requiredField,
+     calibrationDate: requiredField,
+     calibrationDueDate: requiredField,
 
 
 
@@ -193,8 +194,8 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
 
     const dto = {
       ...values,
-      //calibrationDate: values.calibrationDate ? format(new Date(values.calibrationDate), "yyyy-MM-dd") : null,
-      //calibrationDueDate: values.calibrationDueDate ? format(new Date(values.calibrationDueDate), "yyyy-MM-dd") : null,
+      calibrationDate: values.calibrationDate ? format(new Date(values.calibrationDate), "yyyy-MM-dd") : null,
+      calibrationDueDate: values.calibrationDueDate ? format(new Date(values.calibrationDueDate), "yyyy-MM-dd") : null,
       soDate: format(new Date(values.soDate), "yyyy-MM-dd"),
 
     }
@@ -580,9 +581,9 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
                       </div>
 
 
-                      {/* <div className="col-md-3">
+                       <div className="col-md-3">
                         <div className="form-group">
-                          <label htmlFor="calibrationAgency" className="text-start d-block">Calibration Agency : </label>
+                          <label htmlFor="calibrationAgency" className="text-start d-block">Calibration Agency :  <span className="text-danger">*</span></label>
                           <Field
                             type="text"
                             name="calibrationAgency"
@@ -591,15 +592,12 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
                           />
                           <ErrorMessage name="calibrationAgency" component="div" className="text-danger text-start" />
                         </div>
-                      </div> */}
+                      </div> 
 
-
-
-
-                      {/* <div className="col-md-3">
+                       <div className="col-md-3">
                         <div className="form-group">
                           <label htmlFor="calibrationDate" className="text-start d-block">
-                            Calibration Date :
+                            Calibration Date :  <span className="text-danger">*</span>
                           </label>
 
                           <DatePicker
@@ -625,12 +623,12 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
 
                           <ErrorMessage name="calibrationDate" component="div" className="text-danger text-start" />
                         </div>
-                      </div> */}
+                      </div> 
 
-                      {/* <div className="col-md-3">
+                       <div className="col-md-3">
                         <div className="form-group">
                           <label htmlFor="calibrationDueDate" className="text-start d-block">
-                            Calibration Due Date :
+                            Calibration Due Date :  <span className="text-danger">*</span>
                           </label>
 
                           <DatePicker
@@ -649,61 +647,7 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
 
                           <ErrorMessage name="calibrationDueDate" component="div" className="text-danger text-start" />
                         </div>
-                      </div> */}
-
-
-
-
-
-                      {/* <div className="col-md-3">
-                        <div className="form-group">
-                          <label htmlFor="procuredBy" className="text-start d-block">Procured By : <span className="text-danger">*</span></label>
-                          <Field
-                            type="text" name="procuredBy" className="form-control mb-2" placeholder="Enter Procured By" />
-                          <ErrorMessage name="procuredBy" component="div" className="text-danger text-start" />
-                        </div>
-                      </div>
-
-                      <div className="col-md-3">
-                        <div className="form-group">
-                          <label htmlFor="procuredOn" className="text-start d-block">Procured On : <span className="text-danger">*</span></label>
-
-                          <DatePicker
-                            selected={values.procuredOn}
-                            onChange={(date) => setFieldValue("procuredOn", date)}
-                            className="form-control mb-2"
-                            placeholderText="Select Procured On"
-                            dateFormat="dd-MM-yyyy"
-                            showYearDropdown
-                            showMonthDropdown
-                            dropdownMode="select"
-                            minDate={getMinDate()}
-                            maxDate={getMaxDate()}
-                            onKeyDown={(e) => e.preventDefault()}
-                          />
-
-                          <ErrorMessage name="procuredOn" component="div" className="text-danger text-start" />
-                        </div>
-                      </div> */}
-
-
-
-
-
-
-
-                      {/* <div className="col-md-3">
-                        <div className="form-group">
-                          <label htmlFor="usedBy" className="text-start d-block">Used By : <span className="text-danger">*</span></label>
-                          <Field
-                            type="text" name="usedBy" className="form-control mb-2" placeholder="Enter Used By" />
-                          <ErrorMessage name="usedBy" component="div" className="text-danger text-start" />
-                        </div>
-                      </div> */}
-
-
-
-
+                      </div> 
 
                     </div>
                     <div align="center">

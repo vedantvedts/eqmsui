@@ -17,7 +17,7 @@ const CalibrationAddEditComponent=({mode,calibrationId,equipmentValue,equipmentN
 
     const [formData, setFormData] = useState({
     equipmentId: equipmentValue || "",
-    calibrationAgency: "",
+    
     calibrationDate: "",
     calibrationDueDate: "",
   });
@@ -31,7 +31,7 @@ const CalibrationAddEditComponent=({mode,calibrationId,equipmentValue,equipmentN
         ...prev,
         calibrationId: data?.calibrationId ?? "",
         equipmentId: data?.equipmentId ?? "",
-        calibrationAgency: data?.calibrationAgency ?? "",
+       
         calibrationDate: data?.calibrationDate ?? "",
         calibrationDueDate: data?.calibrationDueDate ?? "",
      
@@ -56,7 +56,6 @@ const CalibrationAddEditComponent=({mode,calibrationId,equipmentValue,equipmentN
 
   const validationSchema = Yup.object().shape({
 
-    calibrationAgency: requiredField,
     calibrationDate: requiredField,
     calibrationDueDate: requiredField,
    
@@ -137,7 +136,7 @@ const handleSubmit = async (values) => {
           <Navbar />
           <div className="expert-form-container">
             <div className="form-card" style={{ marginLeft: "25%", marginRight: "25%" }}>
-              <h4 className="form-title">{mode === "add" ? "Add Calibration" : "Edit Calibration"} - {equipmentName}</h4>
+              <h4 className="form-title">{mode === "add" ? "Revise Calibration" : "Edit Calibration"} - {equipmentName}</h4>
               <Formik
                 initialValues={formData}
                 validationSchema={validationSchema}
@@ -155,19 +154,6 @@ const handleSubmit = async (values) => {
                 {({ setFieldValue, setFieldTouched, values }) => (
                   <Form>
                     <div className="column" align="center">
-                       <div className="col-md-4">
-                        <div className="form-group">
-                          <label htmlFor="calibrationAgency" className="text-start d-block">Calibration Agency : </label>
-                          <Field
-                            type="text"
-                            name="calibrationAgency"
-                            className="form-control mb-2"
-                            placeholder="Enter Calibration Agency"
-                          />
-                          <ErrorMessage name="calibrationAgency" component="div" className="text-danger text-start" />
-                        </div>
-                      </div> 
-
                       <div className="col-md-4">
                         <div className="form-group">
                           <label htmlFor="calibrationDate" className="text-start d-block">
