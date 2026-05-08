@@ -11,9 +11,10 @@ const FormikSelect = ({
 }) => {
   return (
     <Select
+       name={name}
       options={options}
-      value={options.find(option => option.value === value)}
-      onChange={(option) => onChange(name, option ? option.value : null)}
+      value={value} // 👈 Pass the full object, not just value
+      onChange={(option) => onChange(name, option)} // 👈 Save the full object to Formik
       onBlur={() => onBlur(name, true)}
       placeholder={placeholder}
       isSearchable

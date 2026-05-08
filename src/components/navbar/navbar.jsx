@@ -40,10 +40,10 @@ const Navbar = () => {
               <div className="nav-link dropdown-toggle" role="button">
                 Master
               </div>
-              <ul className="dropdown-menu">
+              {/* <ul className="dropdown-menu">
                 <li><Link className="dropdown-item" to="/make">Make</Link></li>
                 <li><Link className="dropdown-item" to="/model">Model</Link></li>
-              </ul>
+              </ul> */}
             </li>
 
             <li className="nav-item dropdown hover-dropdown position-relative ms-3 me-3">
@@ -53,17 +53,22 @@ const Navbar = () => {
               <ul className="dropdown-menu">
                 <li><Link className="dropdown-item" to="/equipment">Equipment </Link></li>
                 <li><Link className="dropdown-item" to="/equipmentlog">Equipment Log </Link></li>
+                <li><Link className="dropdown-item" to="/calibration">Calibration</Link></li>
               </ul>
             </li>
-            <li>
+            {/* <li>
             <div className="nav-link dropdown-toggle" role="button">
                 Calibration
               </div>
-            </li>
-            <li>
+            </li> */}
+            <li className="nav-item dropdown hover-dropdown position-relative ms-3 me-3">
             <div className="nav-link dropdown-toggle" role="button">
                 Inventory Components
               </div>
+               <ul className="dropdown-menu">
+                <li><Link className="dropdown-item" to="/componentlist">Component</Link></li>
+                 <li><Link className="dropdown-item" to="/componentdetails">Component Details</Link></li>
+               </ul>
             </li>
             <li>
             <div className="nav-link dropdown-toggle" role="button">

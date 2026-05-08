@@ -17,7 +17,12 @@ export const login = async (username, password) => {
     });
     const token = response.data.token;
     if (token) {
-      localStorage.setItem('token', token);
+      //localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify({
+        token: response.data.token,
+        username: username
+      }));
+      
     }
 
     return response;
@@ -31,7 +36,6 @@ export const login = async (username, password) => {
 export const logout = async () => {
       try {
         localStorage.removeItem('user');
-        localStorage.removeItem("usertoken");
         localStorage.clear();
 
       } catch (error) {

@@ -35,7 +35,6 @@ const LoginPage = (props) => {
           setLoading(false);
           showError("Login failed. Please try again.");
         } else {
-          localStorage.setItem("usertoken", JSON.stringify(response.data.token));
           props.router.navigate("/dashboard");
         }
       },

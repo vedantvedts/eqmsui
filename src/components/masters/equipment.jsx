@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import Datatable from "../datatable/datatable";
-import { getEquipmentListService } from "../../services/masterservice";
+import { getEquipmentById, getEquipmentListService } from "../../services/masterservice";
 import EquipmentAddEditComponent from "./equipmentAddEditComponent";
 import "../datatable/master.css";
-import { FaUserEdit } from "react-icons/fa";
+import { FaDownload, FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Navbar from "../navbar/navbar";
+import { printEquipmentDownload } from "../print/equipmentPrint";
 
-const Equipment = () => { 
+const Equipment = () => {
 
   const [equipmentList, setEquipmentList] = useState([]);
   const [status, setStatus] = useState('');
@@ -15,16 +16,24 @@ const Equipment = () => {
 
   const columns = [
     { name: "SN", selector: (row) => row.sn, sortable: true, align: 'text-center' },
-    { name: "Calibration Agency", selector: (row) => row.calibrationAgency, sortable: true, align: 'text-start' },
-    { name: "Procured By", selector: (row) => row.procuredBy, sortable: true, align: 'text-start' },
+    { name: "Equipment Name", selector: (row) => row.equipmentName, sortable: true, align: 'text-start' },
+    { name: "Item Serial No", selector: (row) => row.itemSerialNumber, sortable: true, align: 'text-center' },
+    { name: "Make", selector: (row) => row.make, sortable: true, align: 'text-start' },
+    { name: "Model", selector: (row) => row.model, sortable: true, align: 'text-start' },
     { name: "Item Cost", selector: (row) => row.itemCost, sortable: true, align: 'text-end' },
-    { name: "Location", selector: (row) => row.location, sortable: true, align: 'text-center', },
+    { name: "Location", selector: (row) => row.location, sortable: true, align: 'text-start', },
+    { name: "SSRNo", selector: (row) => row.ssrNo, sortable: true, align: 'text-start' },
     { name: "Action", selector: (row) => row.action, sortable: true, align: 'text-center', },
   ];
 
   const editEquipment = async (id) => {
     setEquipmentId(id);
     setStatus('edit');
+  }
+
+  const handleEquipmentDownload = async (id) => {
+    const data = await getEquipmentById(id);
+    await printEquipmentDownload(data);
   }
 
   const addEquipment = () => {
@@ -52,14 +61,28 @@ const Equipment = () => {
     setEquipmentList(
       data.map((item, index) => ({
         sn: index + 1 + '.',
-        calibrationAgency: item.calibrationAgency ?? '-',
+        equipmentName: item.equipmentName ?? '-',
+        itemSerialNumber: item.itemSerialNumber ?? '-',
+        make: item.make ?? '-',
+        model: item.model ?? '-',
+
         itemCost: item.itemCost ?? '-',
-        procuredBy: item.procuredBy ?? '-',
         location: item.location ?? '-',
+        ssrNo: item.ssrNo ?? '-',
         action: (
-              <button className="btn btn-warning btn-sm me-1" onClick={() => item.id != null && editEquipment(item.id)} title="Edit Equipment">
-                <FaUserEdit size={16} />
-              </button>    
+          <>
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-success me-2"
+              onClick={() => handleEquipmentDownload(item.equipmentId)}
+            >
+              &nbsp;
+              <FaDownload size={16} />
+            </button>
+            <button className="btn btn-warning btn-sm" onClick={() => item.equipmentId != null && editEquipment(item.equipmentId)} title="Edit Equipment">
+              <FaEdit size={16} />
+            </button>
+          </>
         ),
       }))
     );

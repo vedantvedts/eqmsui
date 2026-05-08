@@ -2,27 +2,31 @@ import { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage, } from "formik";
 import * as Yup from "yup";
 import "../datatable/master.css";
-import { saveEquipmentLogData, partialUpdateEquipmentLog, getEquipmentLogById, getEquipmentListService } from "../../services/masterservice";
+import { saveEquipmentLogData, partialUpdateEquipmentLog, getEquipmentLogById, getEquipmentListService,getEmployeeListService,UpdateEquipmentLog } from "../../services/masterservice";
 import { showAlert, showConfirmation } from "../datatable/swalHelper";
 import EquipmentLog from "./equipmentLog";
 import Navbar from "../navbar/navbar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import FormikSelect from "../../common/formikSelect";
+import Select from "react-select";
 
 
-const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
+const EquipmentLogAddEditComponent = ({ mode, equpmentLogId, equipmentValue, equipmentName }) => {
 
   const [status, setStatus] = useState('');
   const [equipmentList, setEquipmentList] = useState([]);
+  const [employeeList, setEmployeeList] = useState([]);
 
   const [formData, setFormData] = useState({
     startTime: "",
     endTime: "",
     totalHours: "",
-    usageDate: "",
-    equipment: "",
-    description: ""
+    
+    equipmentId: equipmentValue || "",
+    description: "",
+    usedBy:"",
+    equipmentName:"",
 
   });
 
@@ -38,10 +42,11 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
         id: data?.id ?? "",
         startTime: data.startTime ? new Date(data.startTime) : "",
         endTime: data.endTime ? new Date(data.endTime) : "",
-        usageDate: data.usageDate ? new Date(data.usageDate) : "",
+        
         totalHours: data?.totalHours ?? "",
-        equipment: data?.equipment?.id ?? "",
+        equipmentId: data?.equipmentId ?? "",
         description: data?.description ?? "",
+        usedBy:data?.usedBy ??"",
 
       }));
     } catch (err) {
@@ -61,20 +66,32 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
     try {
       const data = await getEquipmentListService();
       if (Array.isArray(data) && data.length > 0) {
-        const formattedData = data.map(item => ({
-          value: item.id,
-          label: item.calibrationAgency.trim(),
-        }));
-        setEquipmentList(formattedData);
+        // const formattedData = data.map(item => ({
+        //   value: item.equipmentId,
+        //   label: item.equipmentName,
+        // }));
+
+
+        setEquipmentList(data);
       } else {
         setEquipmentList([]);
-        console.error("Model list is empty or invalid.");
+        console.error("Equipment list is empty or invalid.");
+      }
+
+
+     const employeeData = await getEmployeeListService();
+      if (Array.isArray(employeeData) && employeeData.length > 0) {
+        setEmployeeList(employeeData);
+      } else {
+        setEmployeeList([]);
+        console.error("Employee list is empty or invalid.");
       }
 
 
     } catch (err) {
       console.error("Failed to fetch equipment master list:", err);
       setEquipmentList([]);
+      setEmployeeList([]);
     }
   };
 
@@ -111,14 +128,17 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
 
     startTime: requiredField,
     endTime: requiredField,
-    equipment: requiredField,
-    usageDate: requiredField,
+   
     description: requiredField,
-    totalHours: requiredField
+    totalHours: requiredField,
+    usedBy: requiredField,
 
   });
 
   const handleSubmit = async (values) => {
+
+    console.log("values",values);
+    
     try {
       if (mode === "add") {
         const confirmed = await showConfirmation();
@@ -135,7 +155,7 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
       } else {
         const confirmed = await showConfirmation();
         if (confirmed) {
-          const response = await partialUpdateEquipmentLog(equpmentLogId, values);
+          const response = await UpdateEquipmentLog(equpmentLogId, values);
           if (response.id != null && response.id > 0) {
             setStatus('list');
             showAlert("Success", "Equipment log updated successfully", "success");
@@ -148,11 +168,29 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
     } catch (error) {
       showAlert("Error", "Something went wrong. Please try again later.", "error");
     }
+     
   };
+
+ 
 
   const redirectEquipmentLogList = () => {
     setStatus('list');
   }
+
+  // const equipmentOptions = equipmentList.map(equip => ({
+  //   value: equip.equipmentId,
+  //   label: equip.equipmentName
+  // }));
+
+
+
+    const empOptions = employeeList.map(emp => ({
+    value: emp.empId,
+    label: emp.empName
+  }));
+
+
+
 
   switch (status) {
     case 'list':
@@ -162,8 +200,8 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
         <div>
           <Navbar />
           <div className="expert-form-container">
-            <div className="form-card">
-              <h4 className="form-title">{mode === "add" ? "Add Equipment Usage Log" : "Edit Equipment Usage Log"}</h4>
+            <div className="form-card" style={{ marginLeft: "25%", marginRight: "25%" }}>
+              <h4 className="form-title">{mode === "add" ? "Add Equipment Usage Log" : "Edit Equipment Usage Log"} - {equipmentName}</h4>
               <Formik
                 initialValues={formData}
                 validationSchema={validationSchema}
@@ -172,8 +210,7 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
                     ...values,
                     startTime: values.startTime ? values.startTime.toISOString() : "",
                     endTime: values.endTime ? values.endTime.toISOString() : "",
-                    usageDate: values.usageDate ? values.usageDate.toISOString() : "",
-                    equipment: values.equipment ? { id: values.equipment } : null,
+                    
                   };
                   handleSubmit(payload);
                 }}
@@ -187,50 +224,11 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
                       setFieldValue={setFieldValue}
                     />
                     <Form>
-                      <div className="row">
+                      <div className="column" align="center">
 
-                      <div className="col-md-3">
-                        <div className="form-group">
-                          <label htmlFor="equipment" className="text-start d-block">
-                          Calibration Agency: <span className="text-danger">*</span>
-                          </label>
-
-                          <FormikSelect
-                            name="equipment"
-                            options={equipmentList}
-                            value={values.equipment}
-                            placeholder="Select Calibration Agency"
-                            onChange={setFieldValue}
-                            onBlur={setFieldTouched}
-                          />
-                          <ErrorMessage name="equipment" component="div" className="text-danger text-start" />
-                        </div>
-                      </div>
-
-                      <div className="col-md-3">
-                          <div className="form-group">
-                            <label htmlFor="usageDate" className="text-start d-block">Usage Date : <span className="text-danger">*</span></label>
-
-                            <DatePicker
-                              selected={values.usageDate}
-                              onChange={(date) => setFieldValue("usageDate", date)}
-                              className="form-control mb-2"
-                              placeholderText="Select Usage Date"
-                              dateFormat="dd-MM-yyyy"
-                              showYearDropdown
-                              showMonthDropdown
-                              dropdownMode="select"
-                              minDate={getMinDate()}
-                              maxDate={getMaxDate()}
-                              onKeyDown={(e) => e.preventDefault()}
-                            />
-
-                            <ErrorMessage name="usageDate" component="div" className="text-danger text-start" />
-                          </div>
-                        </div>
-
-                        <div className="col-md-3">
-                          <div className="form-group">
+                   
+                        <div className="col-md-4">
+                          <div className="form-group" >
                             <label htmlFor="startTime" className="text-start d-block">Start Time : <span className="text-danger">*</span></label>
 
                             <DatePicker
@@ -263,7 +261,7 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
                           </div>
                         </div>
 
-                        <div className="col-md-3">
+                        <div className="col-md-4">
                           <div className="form-group">
                             <label htmlFor="endTime" className="text-start d-block">End Time : <span className="text-danger">*</span></label>
 
@@ -289,7 +287,7 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
                           </div>
                         </div>
 
-                        <div className="col-md-3">
+                        <div className="col-md-4">
                           <div className="form-group">
                             <label htmlFor="totalHours" className="text-start d-block">Total Hours: <span className="text-danger">*</span></label>
                             <Field
@@ -304,7 +302,24 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
                           </div>
                         </div>
 
-                        <div className="col-md-3">
+
+
+                        <div className="col-md-4">
+                        <div className="form-group">
+                          <label htmlFor="usedBy" className="text-start d-block">Used By : <span className="text-danger">*</span></label>
+                          <Select
+                            className="text-start"
+                            options={empOptions}
+                            value={empOptions.find(opt => opt.value === values.usedBy) || null}
+                            onChange={(selected) => setFieldValue("usedBy", selected ? selected.value : "")}
+                            isClearable
+                            placeholder="Select"
+                          />
+                          <ErrorMessage name="usedBy" component="div" className="text-danger text-start" />
+                        </div>
+                      </div>
+
+                        <div className="col-md-4">
                         <div className="form-group">
                           <label htmlFor="description" className="text-start d-block">Description : <span className="text-danger">*</span></label>
                           <Field
@@ -316,6 +331,8 @@ const EquipmentLogAddEditComponent = ({ mode, equpmentLogId }) => {
                           <ErrorMessage name="description" component="div" className="text-danger text-start" />
                         </div>
                       </div>
+
+                      
 
                       </div>
                       <div align="center">
