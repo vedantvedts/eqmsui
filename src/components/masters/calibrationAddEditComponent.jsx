@@ -128,8 +128,13 @@ const handleSubmit = async (values) => {
 
 
   switch (status) {
-    case 'list':
-      return <Calibration></Calibration>;
+  case 'list':
+  return (
+    <Calibration
+      selectedEquipmentId={formData.equipmentId}
+      selectedEquipmentName={equipmentName}
+    />
+  );
     default:
       return (
         <div>
