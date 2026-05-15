@@ -36,8 +36,8 @@ const ComponentList = () => {
 
   const columns = [
     { name: "SN", selector: (row) => row.sn, sortable: true, align: 'text-center' },
-    { name: "Component", selector: (row) => row.componentName, sortable: true, align: 'text-center' },
-    { name: "Nomenclature ", selector: (row) => row.nomenclature, sortable: true, align: 'text-center' },
+    { name: "Component", selector: (row) => row.componentName, sortable: true, align: 'text-start' },
+    { name: "Nomenclature ", selector: (row) => row.nomenclature, sortable: true, align: 'text-start' },
     { name: "Action", selector: (row) => row.action, sortable: true, align: 'text-center', },
   ];
 

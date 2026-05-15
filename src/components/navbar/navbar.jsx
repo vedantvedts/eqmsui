@@ -38,12 +38,22 @@ const Navbar = () => {
 
             <li className="nav-item dropdown hover-dropdown position-relative">
               <div className="nav-link dropdown-toggle" role="button">
+                Admin
+              </div>
+              {<ul className="dropdown-menu">
+                <li><Link className="dropdown-item" to="/usermanager">User Manager</Link></li>
+                <li><Link className="dropdown-item" to="/auditstamping">Audit Stamping</Link></li>
+              </ul> }
+            </li>
+
+            <li className="nav-item dropdown hover-dropdown position-relative ms-3 me-3">
+              <div className="nav-link dropdown-toggle" role="button">
                 Master
               </div>
-              {/* <ul className="dropdown-menu">
+              {<ul className="dropdown-menu">
                 <li><Link className="dropdown-item" to="/make">Make</Link></li>
                 <li><Link className="dropdown-item" to="/model">Model</Link></li>
-              </ul> */}
+              </ul> }
             </li>
 
             <li className="nav-item dropdown hover-dropdown position-relative ms-3 me-3">

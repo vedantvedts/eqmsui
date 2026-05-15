@@ -36,14 +36,16 @@ const getMaxDate = () => {
 
 
 
-const EquipmentLog = () => {
+const EquipmentLog = ({ selectedEquipmentId, selectedEquipmentName }) => {
 
+
+  
   const [equipmentLogList, setEquipmentLogList] = useState([]);
   const [status, setStatus] = useState('');
   const [equpmentLogId, setEqupmentLogId] = useState('');
   const [equipmentList, setEquipmentList] = useState([]);
-  const [equipmentValue, setEquipmentValue] = useState('');
-  const [equipmentName, setEquipmentName] = useState('');
+  const [equipmentValue, setEquipmentValue] = useState(selectedEquipmentId || '');
+  const [equipmentName, setEquipmentName] = useState(selectedEquipmentName || '');
 
   const [fromDateValue, setFromDateValue] = useState(getMinDate());
   const [toDateValue, setToDateValue] = useState(getMaxDate());
@@ -79,13 +81,18 @@ const EquipmentLog = () => {
     }
   }, [equipmentValue, fromDateValue, toDateValue]);
 
-  useEffect(() => {
-    if (equipmentList.length > 0 && (!equipmentValue || equipmentValue === "")) {
-      setEquipmentValue(equipmentList[0].equipmentId);
-      setEquipmentName(equipmentList[0].equipmentName);
+ useEffect(() => {
+  if (
+    equipmentList.length > 0 &&
+    (equipmentValue === '' || equipmentValue == null)
+  ) {
+    setEquipmentValue(selectedEquipmentId || equipmentList[0].equipmentId);
 
-    }
-  }, [equipmentList]);
+    setEquipmentName(
+      selectedEquipmentName || equipmentList[0].equipmentName
+    );
+  }
+}, [equipmentList, selectedEquipmentId, selectedEquipmentName]);
 
   const fetchEquipmentLogMasterListById = async (equipmentValue, fromDateValue, toDateValue) => {
     try {
@@ -125,6 +132,17 @@ const EquipmentLog = () => {
   }));
 
 
+  const formatDuration = (hours) => {
+  if (hours == null) return '-';
+
+  const totalMinutes = Math.round(hours * 60);
+
+  const hh = String(Math.floor(totalMinutes / 60)).padStart(2, '0');
+  const mm = String(totalMinutes % 60).padStart(2, '0');
+
+  return `${hh}:${mm}`;
+};
+
 
   const setTableData = (data) => {
     setEquipmentLogList(
@@ -133,7 +151,7 @@ const EquipmentLog = () => {
         //equipmentName: item.equipmentName? item.equipmentName : '-',
         startTime: item.startTime ? formatDate(item.startTime) : '-',
         endTime: item.endTime ? formatDate(item.endTime) : '-',
-        totalHours: item.totalHours != null ? `${item.totalHours}` : '-',
+        totalHours: formatDuration(item.totalHours),
         description: item.description ? item.description : '-',
         usedByName: item.usedByName ? item.usedByName : '-',
         action: (

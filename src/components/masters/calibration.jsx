@@ -8,14 +8,14 @@ import CalibrationAddEditComponent from "./calibrationAddEditComponent";
 import { FaEdit } from "react-icons/fa";
 import { format } from "date-fns";
 
-const Calibration = () => {
+const Calibration = ({ selectedEquipmentId, selectedEquipmentName }) => {
 
 
      const [calibrationList, setCalibrationList] = useState([]);
      const [calibrationId, setCalibrationId] = useState('');
      const [equipmentList, setEquipmentList] = useState([]);
-      const [equipmentValue, setEquipmentValue] = useState('');
-     const [equipmentName, setEquipmentName] = useState('');
+      const [equipmentValue, setEquipmentValue] = useState(selectedEquipmentId || '');
+     const [equipmentName, setEquipmentName] = useState(selectedEquipmentName || '');
       const [status, setStatus] = useState('');
 
 
@@ -61,13 +61,20 @@ const getEquipmentMasterList = async () => {
     }
   }, [equipmentValue]);
 
-  useEffect(() => {
-    if (equipmentList.length > 0 && (!equipmentValue || equipmentValue === "")) {
-      setEquipmentValue(equipmentList[0].equipmentId);
-      setEquipmentName(equipmentList[0].equipmentName);
+ useEffect(() => {
+  if (
+    equipmentList.length > 0 &&
+    (equipmentValue === "" || equipmentValue == null)
+  ) {
+    setEquipmentValue(
+      selectedEquipmentId || equipmentList[0].equipmentId
+    );
 
-    }
-  }, [equipmentList]);
+    setEquipmentName(
+      selectedEquipmentName || equipmentList[0].equipmentName
+    );
+  }
+}, [equipmentList, selectedEquipmentId, selectedEquipmentName]);
 
  const handleEquipChange = (data) => {
     setEquipmentValue(data?.value);

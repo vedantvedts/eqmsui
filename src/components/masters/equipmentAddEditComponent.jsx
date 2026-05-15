@@ -55,6 +55,7 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
   const getDataById = async (equipmentId) => {
     try {
       const data = await getEquipmentById(equipmentId);
+      console.log("Fetched equipment data:", data);
       if (!data) return;
 
       setFormData(prev => ({
@@ -77,6 +78,8 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
         projectId: data?.projectId ?? "",
         model: data?.model ?? "",
         make: data?.make ?? "",
+        photoName: data?.photoName ?? "",
+        fileName: data?.fileName ?? "",
 
 
       }));
@@ -250,7 +253,7 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
 
   const empOptions = employeeList.map(emp => ({
     value: emp.empId,
-    label: emp.empName
+    label: emp.salutation ? emp.salutation + ' ' + emp.empName : emp.empName
   }));
 
 
@@ -381,12 +384,12 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
 
                       <div className="col-md-3">
                         <div className="form-group">
-                          <label htmlFor="soNo" className="text-start d-block">So Number: <span className="text-danger">*</span></label>
+                          <label htmlFor="soNo" className="text-start d-block">SO Number: <span className="text-danger">*</span></label>
                           <Field
                             type="text"
                             name="soNo"
                             className="form-control mb-2"
-                            placeholder="Enter So Number"
+                            placeholder="Enter SO Number"
                           />
                           <ErrorMessage name="soNo" component="div" className="text-danger text-start" />
                         </div>
@@ -395,7 +398,7 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
                       <div className="col-md-3">
                         <div className="form-group">
                           <label htmlFor="soDate" className="text-start d-block">
-                            So Date : <span className="text-danger">*</span>
+                            SO Date : <span className="text-danger">*</span>
                           </label>
 
                           <DatePicker
@@ -408,7 +411,7 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
                               }
                             }}
                             className="form-control mb-2"
-                            placeholderText="Select So Date"
+                            placeholderText="Select SO Date"
                             dateFormat="dd-MM-yyyy"
                             showYearDropdown
                             showMonthDropdown
@@ -507,7 +510,7 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
                       <div className="col-md-3">
                         <div className="form-group">
                           <label htmlFor="photo" className="text-start d-block">Photo Upload :
-                            {mode === 'edit' &&
+                            {mode === 'edit' && values.photoName &&(
                               <button
                                 type="button"
                                 className="btn btn-sm btn-outline-success"
@@ -515,6 +518,7 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
                               >
                                 <FaDownload size={16} />
                               </button>
+                            )
                             }
                           </label>
 
@@ -532,14 +536,14 @@ const EquipmentAddEditComponent = ({ mode, equipmentId }) => {
                       <div className="col-md-3">
                         <div className="form-group">
                           <label htmlFor="file" className="text-start d-block">File Upload : &nbsp;
-                            {mode === 'edit' &&
+                            {mode === 'edit' && values.fileName &&(
                               <button
                                 type="button"
                                 className="btn btn-sm btn-outline-success"
                                 onClick={() => handleDownload(values.equipmentId, "file")}
                               >
                                 <FaDownload size={16} />
-                              </button>}
+                              </button>)}
                           </label>
 
                           <input id="file" name="file" type="file" className="form-control mb-2"

@@ -10,14 +10,14 @@ import ComponentDetailsAddEditComponent from "./componentdetailsaddedit";
 
 
 
-const ComponentDetails =() =>{
+const ComponentDetails = ({ selectedComponentId, selectedComponentName }) => {
 
 
 const [ComponentDetailsList, setComponentDetailsList] = useState([]);
 const [status, setStatus] = useState('');
 const [ComponentList,setComponentList]=useState([]);
-const [componentValue, setComponentValue] = useState('');
-const [componentName, setComponentName] = useState('');
+const [componentValue, setComponentValue] = useState(selectedComponentId || '');
+const [componentName, setComponentName] = useState(selectedComponentName || '');
 const [componentDetailsId, setComponentDetailsId] = useState('');
 
 
@@ -63,12 +63,19 @@ useEffect(() => {
   }, [componentValue]);
 
   useEffect(() => {
-    if (ComponentList.length > 0 && (!componentValue || componentValue === "")) {
-      setComponentValue(ComponentList[0].componentId);
-      setComponentName(ComponentList[0].componentName);
+  if (
+    ComponentList.length > 0 &&
+    (componentValue === "" || componentValue == null)
+  ) {
+    setComponentValue(
+      selectedComponentId || ComponentList[0].componentId
+    );
 
-    }
-  }, [ComponentList]);
+    setComponentName(
+      selectedComponentName || ComponentList[0].componentName
+    );
+  }
+}, [ComponentList, selectedComponentId, selectedComponentName]);
 
  const handleCompChange = (data) => {
     setComponentValue(data?.value);

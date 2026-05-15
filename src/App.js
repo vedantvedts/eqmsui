@@ -10,6 +10,8 @@ import PrivateRoute from './common/privateRoute';
 import Calibration from './components/masters/calibration';
 import ComponentList from './components/inventory/componentlist';
 import ComponentDetails from './components/inventory/componentdetails';
+import UserManager from './components/admin/userManager';
+import AuditStamping from './components/admin/auditStamping';
 
 
 
@@ -29,6 +31,8 @@ function App() {
         <Route path="/componentdetails" element={<ComponentDetails />} />
         <Route path="/make" element={<Make />} />
         <Route path="/model" element={<Model />} />
+        <Route path="/usermanager" element={<UserManager />} />
+        <Route path="/auditstamping" element={<AuditStamping />} />
         </Route>
       </Routes>
     </div>
