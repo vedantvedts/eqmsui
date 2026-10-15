@@ -158,14 +158,12 @@ const StockVerification = () => {
 
     
       const handlePdfExport = async () => {
-                console.log("handle pdf export")
                 const payLoad = {
                   ledgerId : ledgerId,
                    Project : importedLedgerOptions.find(opt => opt.value === Number(ledgerId))?.label || "-",
                    rateCosting : rateCosting,
                    
                 }
-                console.log("payload****",payLoad)
                 await downloadStockVerificationReport(payLoad);
             }
     

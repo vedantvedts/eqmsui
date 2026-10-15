@@ -3,8 +3,8 @@ import Navbar from "../navbar/navbar";
 import Datatable from "../datatable/datatable";
 import { useState, useEffect } from "react";
 import { FaEdit, FaFileExcel, FaFilePdf } from "react-icons/fa";
-import { TbLabelImportantFilled } from "react-icons/tb";
-import { syncSSRItemsToLocal, getLocalSSRItems, importSSRItemToMain, getImportedSSRItemsByDivision, deleteSSRItemfromSatge, downloadSSRItems, } from "../../services/inventoryService";
+import { TbLabelImportantFilled, TbTruckDelivery } from "react-icons/tb";
+import { syncSSRItemsToLocal, getLocalSSRItems, importSSRItemToMain, getImportedSSRItemsByDivision, deleteSSRItemfromSatge, downloadSSRItems, getInventoryDivision, } from "../../services/inventoryService";
 import { format, parseISO } from "date-fns";
 import SsrItemsImportModal from "./ssrItemsImportModal ";
 import { Tooltip } from "react-tooltip";
@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 import { showAlert, showConfirmation } from "../datatable/swalHelper";
 import { generatePdfForListPage } from "../print/generatePdfForListPage";
 import { generateExcelForListPage } from "../print/generateExcelForListPage";
+import ComponentIssued from "./componentIssued";
 
 
 
@@ -32,6 +33,9 @@ const SSRItems = () => {
     const [showImportModal, setShowImportModal] = useState(false);
     const [rowToImport, setRowToImport] = useState(null);
     const [activeTab, setActiveTab] = useState("SSR");
+
+    const [status, setStatus] = useState('');
+    const [selectedComponent, setSelectedComponent] = useState(null);
 
     const [permissions, setPermissions] = useState({
         forView: false, forAdd: false, forEdit: false, forDelete: false,
@@ -62,16 +66,26 @@ const SSRItems = () => {
 
     const loadDropdowns = async () => {
         try {
-            const [divs] = await Promise.all([
+            const [divs, inventoryDivision] = await Promise.all([
                 getDivisionListService(),
+                getInventoryDivision()
             ]);
 
+            // Filter divisions if inventoryDivision is present
+            const targetDivision = inventoryDivision?.toString().trim().toLowerCase();
+
+            const filteredDivs = targetDivision
+                ? (divs ?? []).filter((d) => d?.divisionName?.trim().toLowerCase() === targetDivision)
+                : (divs ?? []);
+
+
             setDivisionOptions(
-                (divs ?? []).map((d) => ({
+                (filteredDivs ?? []).map((d) => ({
                     value: d?.divisionId,
                     label: `${d?.divisionName ?? ""} (${d?.divisionCode ?? ""})`,
                 }))
             );
+            setDivisionId(filteredDivs.length > 0 ? filteredDivs[0]?.divisionId : null);
         } catch (err) {
             console.error("Failed to load dropdowns", err);
             setDivisionOptions([]);
@@ -323,6 +337,11 @@ const SSRItems = () => {
         );
     };
 
+    const issueComponent = (component) => {
+        setSelectedComponent(component);
+        setStatus('issue');
+    };
+
     const setTableDataCopy = (data) => {
         setSsrImportedItemList(
             data.map((item, index) => {
@@ -360,6 +379,27 @@ const SSRItems = () => {
                                 <Tooltip id="Tooltip" className='text-white tooltipName' />
                             </>
                         )}
+                        {/* {permissions.forAdd && (
+                            <button
+                                className="btn btn-primary btn-sm p-1"
+                                onClick={() =>
+                                    item.ssrImportedId &&
+                                    issueComponent({
+                                        entityId: item.ssrImportedId,
+                                        entityType: "SSR",
+                                        componentName: item.procurement,
+                                        unitCode: item.unitCode,
+                                        latestBalQty: item.itemRcvdQty ?? 0,
+                                    })
+                                }
+                                data-tooltip-id="Tooltip"
+                                data-tooltip-content="Issue Qty"
+                                data-tooltip-place="top"
+                                disabled={!item.itemRcvdQty || item.itemRcvdQty <= 0}
+                            >
+                                <TbTruckDelivery size={14} />
+                            </button>
+                        )} */}
                     </div>
                 );
 
@@ -369,27 +409,11 @@ const SSRItems = () => {
     };
 
 
-    // const handlePdfExport = () => {
-    //     generatePdfForListPage({
-    //         title: "Imported SSR Items Report",
-    //         columns: columnsCopy,
-    //         data: ssrImportedItemList,
-    //         fileName: "Imported_SSR_Items_Report",
-    //         orientation: "landscape",
-
-    //         details: {
-    //             "Division": divisionOptions.find(opt => opt.value === Number(divisionId))?.label || "-",
-    //         }
-    //     });
-    // };
-
-     const handlePdfExport = async () => {
-        console.log("handle pdf export")
+    const handlePdfExport = async () => {
         const payLoad = {
-           divisionId : divisionId,
-           divisionName : divisionOptions.find(opt => opt.value === Number(divisionId))?.label || "-"
+            divisionId: divisionId,
+            divisionName: divisionOptions.find(opt => opt.value === Number(divisionId))?.label || "-"
         }
-        console.log("payload****",payLoad)
         await downloadSSRItems(payLoad);
     }
 
@@ -422,125 +446,135 @@ const SSRItems = () => {
         );
     }
 
+    switch (status) {
+        case 'issue':
+            return (
+                <ComponentIssued
+                    component={selectedComponent}
+                    setStatus={setStatus}
+                    refreshList={getImportedSSRItems}
+                />
+            );
+        default:
+            return (
+                <div>
+                    <Navbar />
 
-    return (
-        <div>
-            <Navbar />
+                    <div className="container-fluid mt-3">
 
-            <div className="container-fluid mt-3">
+                        <ul className="nav nav-tabs nav-fill custom-tabs mb-3">
+                            <li className="nav-item">
+                                <button
+                                    className={`nav-link ${activeTab === "SSR" ? "active" : ""}`}
+                                    onClick={() => {
+                                        setActiveTab("SSR");
+                                        setAction("ADD");
+                                    }}
+                                    type="button"
+                                >
+                                    Division Wise SSR Report
+                                </button>
+                            </li>
 
-                <ul className="nav nav-tabs nav-fill custom-tabs mb-3">
-                    <li className="nav-item">
-                        <button
-                            className={`nav-link ${activeTab === "SSR" ? "active" : ""}`}
-                            onClick={() => {
-                                setActiveTab("SSR");
-                                setAction("ADD");
-                            }}
-                            type="button"
-                        >
-                            Division Wise SSR Report
-                        </button>
-                    </li>
-
-                    <li className="nav-item">
-                        <button
-                            className={`nav-link ${activeTab === "IMPORTED" ? "active" : ""}`}
-                            onClick={() => {
-                                setActiveTab("IMPORTED");
-                                setAction("EDIT");
-                            }}
-                            type="button"
-                        >
-                            Imported SSR Items
-                        </button>
-                    </li>
-                </ul>
-                {activeTab === "SSR" && (
-                    <div className="card mt-3">
-                        <div className="card-body text-center">
-                            <h3>Division Wise SSR Report</h3>
-                            <div className="row justify-content-center align-items-center rowHeadercolor">
-                                <div className="col-md-12 d-flex justify-content-end align-items-center flex-wrap">
-                                    <div className="d-flex align-items-center me-4 mb-2">
-                                        <label htmlFor="divisionId" className="font-label me-2 mb-0"> Division: &nbsp;</label>
-                                        <div className="text-start " style={{ width: "400px" }}>
-                                            <Select
-                                                options={divisionOptions}
-                                                value={divisionOptions.find(opt => opt.value === divisionId) || null}
-                                                onChange={(selectedOption) => setDivisionId(selectedOption?.value || "")}
-                                                placeholder="Select Division"
-                                            />
+                            <li className="nav-item">
+                                <button
+                                    className={`nav-link ${activeTab === "IMPORTED" ? "active" : ""}`}
+                                    onClick={() => {
+                                        setActiveTab("IMPORTED");
+                                        setAction("EDIT");
+                                    }}
+                                    type="button"
+                                >
+                                    Imported SSR Items
+                                </button>
+                            </li>
+                        </ul>
+                        {activeTab === "SSR" && (
+                            <div className="card mt-3">
+                                <div className="card-body text-center">
+                                    <h3>Division Wise SSR Report</h3>
+                                    <div className="row justify-content-center align-items-center rowHeadercolor">
+                                        <div className="col-md-12 d-flex justify-content-end align-items-center flex-wrap">
+                                            <div className="d-flex align-items-center me-4 mb-2">
+                                                <label htmlFor="divisionId" className="font-label me-2 mb-0"> Division: &nbsp;</label>
+                                                <div className="text-start " style={{ width: "400px" }}>
+                                                    <Select
+                                                        options={divisionOptions}
+                                                        value={divisionOptions.find(opt => opt.value === divisionId) || null}
+                                                        onChange={(selectedOption) => setDivisionId(selectedOption?.value || "")}
+                                                        placeholder="Select Division"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="d-flex align-items-center mb-2">
+                                                <button
+                                                    className="btn btn-success"
+                                                    onClick={handleSync}
+                                                    disabled={syncing}
+                                                    title="Sync latest data from SIS"
+                                                >
+                                                    {syncing ? "Syncing..." : "SYNC FROM SIS"}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="d-flex align-items-center mb-2">
-                                        <button
-                                            className="btn btn-success"
-                                            onClick={handleSync}
-                                            disabled={syncing}
-                                            title="Sync latest data from SIS"
-                                        >
-                                            {syncing ? "Syncing..." : "SYNC FROM SIS"}
-                                        </button>
+
+                                    <div id="card-body customized-card">
+                                        <Datatable columns={columns} data={ssrItemList} />
                                     </div>
                                 </div>
                             </div>
+                        )}
 
-                            <div id="card-body customized-card">
-                                <Datatable columns={columns} data={ssrItemList} />
-                            </div>
-                        </div>
-                    </div>
-                )}
+                        {activeTab === "IMPORTED" && (
+                            <div className="card mt-3">
+                                <div className="card-body text-center">
+                                    <h3>Imported SSR Items</h3>
+                                    <div className="row justify-content-center align-items-center rowHeadercolor">
+                                        <div className="col-md-12 d-flex justify-content-end align-items-center flex-wrap">
+                                            <div className="d-flex align-items-center mb-2">
+                                                <label htmlFor="divisionId" className="font-label me-2 mb-0"> Division: &nbsp;</label>
+                                                <div className="text-start " style={{ width: "400px" }}>
+                                                    <Select
+                                                        options={divisionOptions}
+                                                        value={divisionOptions.find(opt => opt.value === divisionId) || null}
+                                                        onChange={(selectedOption) => setDivisionId(selectedOption?.value || "")}
+                                                        placeholder="Select Division"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="ms-2 pb-2">
+                                                <button type="button" className="btn btn-danger me-2" onClick={() => handlePdfExport()}>
+                                                    <FaFilePdf size={18} />
+                                                </button>
 
-                {activeTab === "IMPORTED" && (
-                    <div className="card mt-3">
-                        <div className="card-body text-center">
-                            <h3>Imported SSR Items</h3>
-                            <div className="row justify-content-center align-items-center rowHeadercolor">
-                                <div className="col-md-12 d-flex justify-content-end align-items-center flex-wrap">
-                                    <div className="d-flex align-items-center mb-2">
-                                        <label htmlFor="divisionId" className="font-label me-2 mb-0"> Division: &nbsp;</label>
-                                        <div className="text-start " style={{ width: "400px" }}>
-                                            <Select
-                                                options={divisionOptions}
-                                                value={divisionOptions.find(opt => opt.value === divisionId) || null}
-                                                onChange={(selectedOption) => setDivisionId(selectedOption?.value || "")}
-                                                placeholder="Select Division"
-                                            />
+                                                <button type="button" className="btn btn-success" onClick={() => handleExcelExport()}>
+                                                    <FaFileExcel size={18} />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="ms-2 pb-2">
-                                        <button type="button" className="btn btn-danger me-2" onClick={() => handlePdfExport()}>
-                                            <FaFilePdf size={18} />
-                                        </button>
 
-                                        <button type="button" className="btn btn-success" onClick={() => handleExcelExport()}>
-                                            <FaFileExcel size={18} />
-                                        </button>
+                                    <div id="card-body customized-card">
+                                        <Datatable columns={columnsCopy} data={ssrImportedItemList} />
                                     </div>
                                 </div>
                             </div>
-
-                            <div id="card-body customized-card">
-                                <Datatable columns={columnsCopy} data={ssrImportedItemList} />
-                            </div>
-                        </div>
+                        )}
                     </div>
-                )}
-            </div>
 
 
-            <SsrItemsImportModal
-                show={showImportModal}
-                row={rowToImport}
-                onClose={closeImportModal}
-                onSubmit={handleImportSubmit}
-                action={action}
-                modalFor='DIVISION'
-            />
-        </div>
-    );
+                    <SsrItemsImportModal
+                        show={showImportModal}
+                        row={rowToImport}
+                        onClose={closeImportModal}
+                        onSubmit={handleImportSubmit}
+                        action={action}
+                        modalFor='DIVISION'
+                    />
+                </div>
+            );
+    }
 
 };
 

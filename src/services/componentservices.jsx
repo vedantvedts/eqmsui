@@ -146,9 +146,9 @@ export const saveComponentIssuedData = async (data) => {
   }
 }
 
-export const getComponentIssuedListByComponent = async (componentId) => {
+export const getComponentIssuedListByComponent = async (fromDate, toDate, issueType) => {
   try {
-    const response = await axios.get(`${API_URL}api/component/component-issued-component-id/${componentId}`, {
+    const response = await axios.get(`${API_URL}api/component/component-issued-component-id/${fromDate}/${toDate}/${issueType}`, {
       headers: {
         ...authHeader(),
       },

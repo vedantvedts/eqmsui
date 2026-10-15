@@ -289,3 +289,37 @@ export const downloadCondemnationReport = async (payLoad) => {
         throw error;
     }
 }
+
+export const getInventoryDivision = async () => {
+  try {
+    const response = await axios.get(`${API_URL}api/inventory/inventory-division`, {
+      headers: {
+        ...authHeader(),
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching inventory division from application properties:", error);
+    throw error;
+  }
+}
+
+export const downloadIssueItemsPDF = async (payLoad) => {
+    try {
+        showPdfOpeningLoading();
+        const res = await axios.get(`${API_URL}api/reports/issue-items-pdf`, {
+            params: payLoad,
+            responseType: "blob",
+            headers: {
+                ...authHeader(),
+            }
+        })
+        const url = window.URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+        Swal.close();
+        window.open(url);
+    } catch (error) {
+        console.error("Error fetching the downloadIssueItemsPDF Report Details ", error);
+        Swal.close();
+        throw error;
+    }
+}

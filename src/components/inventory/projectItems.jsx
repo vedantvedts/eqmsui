@@ -4,7 +4,7 @@ import Datatable from "../datatable/datatable";
 import { useState, useEffect } from "react";
 import { FaEdit, FaFileExcel, FaFilePdf } from "react-icons/fa";
 import { TbLabelImportantFilled } from "react-icons/tb";
-import { getLocalPwSSRItems, importPwSSRItemToMain, getImportedPwSSRItemsByDivision, deletePwSSRItemfromSatge, syncPwSSRItemsToLocal, getDivisionBasedLedger, getImportedUniqueLedgers, downloadProjectWiseItems, downloadImortProjectWiseItems } from "../../services/inventoryService";
+import { getLocalPwSSRItems, importPwSSRItemToMain, getImportedPwSSRItemsByDivision, deletePwSSRItemfromSatge, syncPwSSRItemsToLocal, getDivisionBasedLedger, getImportedUniqueLedgers, downloadProjectWiseItems, downloadImortProjectWiseItems, getInventoryDivision } from "../../services/inventoryService";
 import { format, parseISO } from "date-fns";
 import SsrItemsImportModal from "./ssrItemsImportModal ";
 import { Tooltip } from "react-tooltip";
@@ -111,16 +111,26 @@ const ProjectItems = () => {
 
     const loadDropdowns = async () => {
         try {
-            const [divs] = await Promise.all([
+            const [divs, inventoryDivision] = await Promise.all([
                 getDivisionListService(),
+                getInventoryDivision()
             ]);
 
+            // Filter divisions if inventoryDivision is present
+            const targetDivision = inventoryDivision?.toString().trim().toLowerCase();
+
+            const filteredDivs = targetDivision
+                ? (divs ?? []).filter((d) => d?.divisionName?.trim().toLowerCase() === targetDivision)
+                : (divs ?? []);
+
+
             setDivisionOptions(
-                (divs ?? []).map((d) => ({
+                (filteredDivs ?? []).map((d) => ({
                     value: d?.divisionId,
                     label: `${d?.divisionName ?? ""} (${d?.divisionCode ?? ""})`,
                 }))
             );
+            setDivisionId(filteredDivs.length > 0 ? filteredDivs[0]?.divisionId : null)
         } catch (err) {
             console.error("Failed to load dropdowns", err);
             setDivisionOptions([]);
@@ -446,14 +456,12 @@ const ProjectItems = () => {
     // };
 
      const handlePdfExport = async () => {
-            console.log("handle pdf export")
             const payLoad = {
               ledgerId : ledgerId,
                Project : importedLedgerOptions.find(opt => opt.value === Number(ledgerId))?.label || "-",
                pageType : pageType,
                pageTypeName : pageTypeOptions.find(opt => opt.value === pageType)?.label || "-"
             }
-            console.log("payload****",payLoad)
             await downloadImortProjectWiseItems(payLoad);
         }
 
