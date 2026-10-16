@@ -133,13 +133,14 @@ const ComponentList = () => {
                 <Tooltip id="Tooltip" className='text-white tooltipName' />
               </>
             )}
-            {permissions.forAdd && (
+            {/* {permissions.forAdd && (
               <button
                 className="btn btn-primary btn-sm p-1"
                 onClick={() =>
                   item.componentId != null &&
                   issueComponent({
-                    componentId: item.componentId,
+                    entityId: item.componentId,
+                    entityType: "COM",
                     componentName: item.componentName,
                     unitCode: item.unitCode,
                     latestBalQty: item.latestBalQty ?? 0,
@@ -153,7 +154,7 @@ const ComponentList = () => {
               >
                 <TbTruckDelivery size={14} />
               </button>
-            )}
+            )} */}
           </div>
         ),
       }))

@@ -210,7 +210,7 @@ const Condemnation = () => {
                     actualItemName: item.ssrItemDTO?.actualItemName || '-',
                     presentLocation: item.ssrItemDTO?.presentLocation || '-',
                     specification: item.ssrItemDTO?.specification || '-',
-                    itemCategory: item.ssrItemDTO?.itemCategory || '-',
+                    itemCategory: item.ssrItemDTO?.categoryName || '-',
                     type: typeValue,
                     ledgerPageCrvId: item.ssrItemDTO?.ledgerPageCrvId || "0",
                     condemnationId: item.condemnationId || "0",
@@ -259,7 +259,7 @@ const Condemnation = () => {
                     actualItemName: item.actualItemName || '-',
                     presentLocation: item.presentLocation || '-',
                     personInCharge: item.personInCharge || '-',
-                    itemCategory: item.itemCategory || '-',
+                    itemCategory: item.categoryName || '-',
                     demandNo: item.demandNo || '-',
                     specification: item.specification || '-',
                     ledgerPageCrvId: item.ledgerPageCrvId || "0",
@@ -320,14 +320,12 @@ const Condemnation = () => {
     // };
 
     const handlePdfExport = async () => {
-                    console.log("handle pdf export")
                     const payLoad = {
                       divisionId : divisionId,
                        division : divisionOptions.find(opt => opt.value === Number(divisionId))?.label || "-",
                        
                        
                     }
-                    console.log("payload****",payLoad)
                     await downloadCondemnationReport(payLoad);
                 }
 
